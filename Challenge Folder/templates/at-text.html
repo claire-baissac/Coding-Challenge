@@ -1,0 +1,67 @@
+{% extends "block-container.html" %}
+
+{% block text %}
+<script>
+	console.log("--> at text <--")
+</script>
+
+
+<h1 style="color: cornflowerblue;">Database Log of TEXT</h1>
+
+<h2 id="person">for person: </h2>
+<h3 id="items">item amount: </h3>
+
+
+<table id="table" border="1" class="dataframe">
+	<thead>
+	  <tr style="text-align: right;">
+		<th>ID</th>
+		<th>DATA</th>
+	  </tr>
+	</thead>
+	<tbody>
+	</tbody>
+  </table>
+
+  <script>
+	var params = new URLSearchParams(location.search);
+	var person = params.get("person");
+	document.getElementById("person").append(person);
+
+	var itemNumber = {{item_count}};
+	document.getElementById("items").append(itemNumber);
+
+  // ˅
+  	var data = {{ data | safe}};
+  	var records = {{ records | safe}};
+
+  	let i = 0;
+
+//   ˅
+	if (person) {
+		for(i=0,c=0; i < itemNumber && c < 100; c++) {
+			var table = document.getElementById("table");
+			var row = table.insertRow(-1);
+			var cell_id = row.insertCell(0);
+			var cell_data = row.insertCell(1);
+			cell_id.innerHTML = data[i]["id"];
+			cell_data.innerHTML = data[i]["text"];
+
+			i++;
+		}
+	}
+  </script>
+<br>
+
+<!-- ˅This is the script that measures the performance, not allowed to edit this section.˅  -->
+<script>
+	window.onload = () => {
+		var hit_time = "{{ hit }}";
+		var end_time = Date.now() / 1000;
+		var time_dif = (end_time - hit_time);
+		var score = Math.floor((1 / time_dif) * 3000);
+		toastr.info("YOUR SCORE: " + score);
+	}
+</script>
+<!-- ˄This is the script that measures the performance, not allowed to edit this section.˄ -->
+{% endblock text %}

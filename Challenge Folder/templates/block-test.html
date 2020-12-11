@@ -1,0 +1,44 @@
+
+{% block test %}
+
+<script>
+	console.log("--- test block ---")
+</script>
+
+<div style="border: solid black;">
+    <form>
+
+        <!-- name -->
+        <label for="person">
+            Person to search for:
+            <input type="text" name="person">
+        </label>
+
+        <!-- ˅ -->
+        <label for="text">
+            Text
+            <input type="checkbox" value="text" name="type" />
+    </label>
+
+    <label for="json">
+        JSON
+        <input type="checkbox" value="json" name="type" />
+    </label>
+        <button>
+        <i class="fas fa-thumbs-up"></i>
+        GO!</button>
+        <!-- <script>
+            console.log("herer")
+            document.getElementById("click").onclick = function() {redirect()};
+            function redirect() {
+                window.open('http://127.0.0.1:5000/test/10' +'?person=james&authorisation=12345678', '_self');
+                // document.getElementById("click").location.assign('/test/' + document.getElementById('items').value +'?person=james&authorisation=12345678')
+            }
+        </script> -->
+    </form>
+</div>
+<br>
+
+
+
+{% endblock test %}

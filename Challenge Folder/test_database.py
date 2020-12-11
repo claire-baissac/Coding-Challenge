@@ -1,0 +1,121 @@
+"""This module does the query execution to the database"""
+
+import io
+import pandas as pd
+import psycopg2 as pg
+from test_dbconfig import get_db_kwargs
+
+DB_KWARGS = get_db_kwargs()
+
+DB_KWARGS_TEXT = {
+    "user":"challenge_role",
+    "password":"this-is-not-the-real-password",
+    "dbname":"test_db",
+    "host":"34.84.42.175"
+}
+
+# ˅
+def execute_queries_get_dataframes(query_string_list, con):
+    """Excute the list of queries as sql and returns dataframes.
+
+    Args:
+        query_string_list ([str]): list of query strings to execute on database
+
+    Returns:
+        response ([dataframe]): the data from database a dataframe for each query
+
+    Errors:
+        response ([str]): returns a list (equal in length to args list length)
+                          of string message with database error"""
+
+    con = None
+    response = []
+
+    try:
+        # connect to server
+        con = pg.connect(**DB_KWARGS_TEXT)
+        # create a cursor
+        cur = con.cursor()
+        # declare dataframe list
+        df_list = []
+        # loop through the list
+        for query in query_string_list:
+            # create new stringIO
+            store = io.StringIO()
+            # put query into sql
+            sql_string = "COPY ({query}) TO STDOUT WITH CSV HEADER".format(query=query)
+            # put sql response into stringio
+            cur.copy_expert(str(sql_string), store)
+            # prepare to read csv
+            store.seek(0)
+            # put csv into dataframe
+            df = pd.read_csv(store, na_filter=False)
+            # add dataframe to list
+            df_list.append(df)
+
+        # commit executions
+        con.commit()
+        # close the cursor
+        cur.close()
+
+        response = df_list
+
+    except pg.Error as error:
+        for query in query_string_list:
+            response.append(error)
+    finally:
+        if con is not None:
+            con.close()
+
+    return response
+
+
+def exc_qrs_get_dfs(query_string_list, con):
+    """Excute the list of queries as sql and returns dataframes.
+
+    Args:
+        query_string_list ([str]): list of query strings to execute on database
+        con: the connection to the server
+
+    Returns:
+        response ([dataframe]): the data from database a dataframe for each query
+
+    Errors:
+        response ([str]): returns a list (equal in length to args list length)
+                          of string message with database error"""
+
+    response = []
+
+    # declare dataframe list
+    df_list = []
+
+    # loop through the list
+    for query in query_string_list:
+
+        try:
+            # create a cursor
+            cur = con.cursor()
+            # create new stringIO
+            store = io.StringIO()
+            # put query into sql
+            sql_string = "COPY ({query}) TO STDOUT WITH CSV HEADER".format(query=query)
+            # put sql response into stringio
+            cur.copy_expert(str(sql_string), store)
+            # prepare to read csv
+            store.seek(0)
+            # put csv into dataframe
+            df = pd.read_csv(store, na_filter=False)
+            # add dataframe to list
+            df_list.append(df)
+            # commit executions
+            con.commit()
+            # close the cursor
+            cur.close()
+
+            response = df_list
+
+        except pg.Error as error:
+            for query in query_string_list:
+                response.append(error)
+
+    return response

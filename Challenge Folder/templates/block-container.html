@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+<script>
+  console.log("-- block container --")
+</script>
+
+<div id="container">
+
+
+{% include "block-test.html" %}
+
+{% block json %}{% endblock json %}
+
+{% block text %}{% endblock text %}
+
+</div>
+
+{% endblock container %}
+
+
+
